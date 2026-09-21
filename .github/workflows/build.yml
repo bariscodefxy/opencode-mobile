@@ -88,6 +88,13 @@ jobs:
       - name: Expo prebuild
         run: npx expo prebuild --platform android --no-install
 
+      - name: Skip Sentry upload without credentials (forks)
+        # Forks have no SENTRY_* secrets, so the Sentry Gradle upload task
+        # fails with "Project not found". Same approach as the build-fdroid
+        # job below: drop the plugin apply line when there is no token.
+        if: env.SENTRY_AUTH_TOKEN == ''
+        run: sed -i '/apply from.*sentry.gradle/d' android/app/build.gradle
+
       - name: Setup signing
         run: |
           if [[ "${{ github.ref }}" == refs/tags/v* && -n "${{ secrets.KEYSTORE_BASE64 }}" ]]; then
