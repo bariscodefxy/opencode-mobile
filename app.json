@@ -37,6 +37,7 @@
       "package": "cc.agentlabs.opencode",
       "versionCode": 42,
       "usesCleartextTraffic": true,
+      "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F172A"
