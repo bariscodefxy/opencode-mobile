@@ -134,6 +134,10 @@ export interface V2AgentInfo {
 export interface V2CommandInfo {
   name: string
   description?: string
+  // The v2 server does send the full prompt template (verified on 1.19.4);
+  // the UI only needs the name today, but dropping the field silently made
+  // every command look like an empty template.
+  template?: string
 }
 
 export interface V2ModelInfo {
@@ -441,7 +445,7 @@ export function toAgent(a: V2AgentInfo): Agent {
 }
 
 export function toCommand(c: V2CommandInfo): Command {
-  return { name: c.name, description: c.description, template: "", hints: [], mcp: false }
+  return { name: c.name, description: c.description, template: c.template ?? "", hints: [], mcp: false }
 }
 
 export function toProject(p: V2ProjectInfo): Project {

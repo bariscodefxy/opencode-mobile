@@ -4,6 +4,7 @@ import {
   formAnswerFromFields,
   pendingRequestInfo,
   rememberForm,
+  toCommand,
   toMessageWithParts,
   toProviderCatalog,
   toQuestionRequest,
@@ -356,4 +357,14 @@ test("toProviderCatalog rebuilds the v1 provider/model shape", () => {
   assert.equal(m.reasoning, true)
   assert.deepEqual(m.variants.high, { reasoningEffort: "high" })
   assert.deepEqual(catalog.default, { prov: "prov/model-a" })
+})
+
+test("toCommand keeps the template the v2 server sends", () => {
+  // GET /api/command on 1.19.4 returns {location, data:[{name, template}]}.
+  const cmd = toCommand({ name: "init", description: "bootstrap", template: "Create or update `AGENTS.md`" })
+  assert.equal(cmd.name, "init")
+  assert.equal(cmd.description, "bootstrap")
+  assert.equal(cmd.template, "Create or update `AGENTS.md`")
+  // A command without a template must not surface the literal "undefined".
+  assert.equal(toCommand({ name: "bare" }).template, "")
 })

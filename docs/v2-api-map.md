@@ -120,3 +120,36 @@ Live-verified v1 behaviour (all through `src/lib/sdk-v1.ts` against a local
   — the event is wrapped in `payload` (v2 has no wrapper), and `events.ts` unwraps
   with `event.payload || event`. Heartbeats arrive as `server.heartbeat` events
   rather than v2's `: heartbeat` comment frames.
+
+## opencode 1.19.4 (npm `latest` since 2026-10) — hybrid, detected as v1
+
+Probed live on 2026-10-25 with `opencode serve --port 4098` on Windows. 1.19.x is
+not the plain v1 line: it already serves the `/api/*` generation *and* keeps the
+legacy routes. Both work, so no change to the detection order is needed — but the
+probe result is not what the table above assumes:
+
+| probe | 1.19.4 |
+| --- | --- |
+| `GET /api/info` | `200 text/html` (SPA) — **the route does not exist here** |
+| `GET /api/health` | `200 application/json` `{"healthy":true}` |
+| `GET /global/health` | `200 application/json` `{"healthy":true,"version":"1.19.4"}` |
+
+`detectServerApi` therefore classifies 1.19.4 as **v1** (its `/api/info` probe falls
+through to the SPA, `/global/health` answers JSON) and the app speaks the legacy
+transport. That is safe: every v1 route the client uses still answers on 1.19.4 —
+verified `/session`, `/experimental/session`, `/question`, `/permission`,
+`/agent`, `/provider`, `/path`, `/project/current`, `/config`, `/file?path=.`.
+It also means `/api/info` must never become the *only* v2 signal: a future server
+that ships the v2 routes without it would be misread.
+
+The v2 mappings in `v2-shape.ts` were also replayed against this server's `/api/*`
+responses (throwaway harness, not committed): `GET /api/session` →
+`{data, cursor}`, `POST /api/session` → `{data: Session.Info}` (`location.directory`,
+no `slug`/`version`), `/api/agent` 7 agents, `/api/command` 2 with a real
+`template`, `/api/provider` + `/api/model` (46 models) → catalog, `/api/location`,
+`/api/fs/list`. All mapped. Not exercised: message streaming, because a prompt needs
+provider credentials.
+
+`/api/command` does carry `template`; `toCommand` used to hard-code `""`, which made
+every server command look template-less. Fixed.
+
