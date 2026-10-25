@@ -6,6 +6,9 @@ on:
     tags: ["v*"]
   pull_request:
     branches: [main]
+  # On demand: build an APK for any branch/commit without waiting for a push
+  # (Actions -> Build Android APK -> Run workflow).
+  workflow_dispatch:
 
 jobs:
   test:
@@ -120,6 +123,69 @@ jobs:
         with:
           name: app-release
           path: android/app/build/outputs/apk/release/app-release.apk
+
+  # Side-loadable APK.
+  #
+  # The `build` job already produces app-release.apk, but a workflow artifact
+  # is only downloadable from the Actions UI while signed in, and arrives as a
+  # .zip — awkward when the device that needs the APK *is* the phone. This job
+  # republishes the same binary as a rolling pre-release, so there is one stable
+  # URL that can be opened directly on the device:
+  #
+  #   https://github.com/bariscodefxy/opencode-mobile/releases/download/apk-latest/opencode-mobile.apk
+  #
+  # Signing caveat: without KEYSTORE_BASE64 the `build` job signs with a
+  # generated debug keystore, so this APK's signature differs from the Play /
+  # F-Droid release of the same package id. Android will refuse to install it
+  # over an installed cc.agentlabs.opencode ("App not installed") — uninstall
+  # the store version first.
+  apk-release:
+    needs: [build]
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # Two pushes landing together must not race the same release asset.
+    concurrency:
+      group: apk-latest-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: app-release
+
+      - name: Rename to a device-friendly file name
+        run: mv app-release.apk opencode-mobile.apk
+
+      - name: Read version metadata
+        id: version
+        run: echo "name=$(jq -r .expo.version app.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish rolling APK release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-latest
+          name: opencode-mobile.apk — latest main
+          prerelease: true
+          # Never take the "Latest" badge away from a real versioned release.
+          make_latest: false
+          overwrite_files: true
+          files: opencode-mobile.apk
+          body: |
+            Side-loadable APK built from `main`.
+
+            - Commit: ${{ github.sha }}
+            - Version: ${{ steps.version.outputs.name }}
+            - Run: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            **Install:** open
+            `https://github.com/bariscodefxy/opencode-mobile/releases/download/apk-latest/opencode-mobile.apk`
+            on the device, or download it and tap the file.
+
+            This build is signed with a generated debug key (the fork has no
+            release keystore). Its signature does not match the Play/F-Droid
+            build of `cc.agentlabs.opencode`, so uninstall any store version
+            before installing this one.
 
   # F-Droid rebuilds this app from source using the recipe in
   # distribution/fdroid-submission/metadata.yml (Builds:), which applies
