@@ -1,0 +1,180 @@
+name: Android APK (side-loadable)
+
+# Fork-only workflow: build an APK you can install on a phone.
+#
+# WHY IT IS SEPARATE FROM build.yml
+# build.yml is upstream's file and stays byte-identical to upstream so merges
+# never conflict. It already builds an APK, but a workflow artifact can only be
+# downloaded from the Actions UI while signed in, and it arrives as a .zip —
+# useless when the device that needs the APK *is* the phone.
+#
+# This workflow publishes the same binary to a rolling pre-release:
+#
+#   https://github.com/bariscodefxy/opencode-mobile/releases/download/apk-latest/opencode-mobile.apk
+#
+# One stable URL, openable on the device, always the newest build.
+#
+# SIGNING: the fork has no release keystore, so the APK is signed with a
+# generated debug key. That is installable, but its signature differs from
+# Play/F-Droid builds of the same package id (cc.agentlabs.opencode), so
+# Android refuses to install it over a store build — uninstall that first.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "src/**"
+      - "android/**"
+      - "assets/**"
+      - "app.json"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/android-apk.yml"
+
+# Never let two pushes race the same release asset; a queue is cheaper than a
+# half-written asset.
+concurrency:
+  group: android-apk-main
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Typecheck and unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Check release version metadata
+        run: npm run check:versions
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+  apk:
+    name: Build APK and publish
+    needs: [test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
+      EXPO_PUBLIC_POSTHOG_KEY: ${{ secrets.EXPO_PUBLIC_POSTHOG_KEY }}
+      EXPO_PUBLIC_CHATWOOT_INBOX_IDENTIFIER: ${{ secrets.EXPO_PUBLIC_CHATWOOT_INBOX_IDENTIFIER }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Cache Gradle
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/.gradle
+          key: ${{ runner.os }}-gradle-apk-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-apk-
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Set Sentry release identifiers
+        id: version
+        # Keep the Gradle-side release/dist equal to what Sentry.init() reports
+        # at runtime (`opencode-mobile@${app.json version}`); otherwise uploaded
+        # source maps land under a release Sentry never looks up.
+        run: |
+          VERSION=$(node -p "require('./app.json').expo.version")
+          echo "SENTRY_RELEASE=opencode-mobile@${VERSION}" >> "$GITHUB_ENV"
+          echo "SENTRY_DIST=${VERSION}" >> "$GITHUB_ENV"
+          echo "name=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Expo prebuild
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Skip Sentry upload without credentials (fork)
+        # Forks carry no SENTRY_* secrets, and the Sentry Gradle plugin fails
+        # the build with "Project not found" rather than skipping. Same approach
+        # as build.yml.
+        if: env.SENTRY_AUTH_TOKEN == ''
+        run: sed -i '/apply from.*sentry.gradle/d' android/app/build.gradle
+
+      - name: Generate debug keystore
+        run: |
+          keytool -genkey -v -keystore android/app/debug.keystore -storepass android \
+            -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: Build APK
+        working-directory: android
+        run: ./gradlew assembleRelease
+
+      - name: Name the artifact for a phone browser
+        run: cp android/app/build/outputs/apk/release/app-release.apk opencode-mobile.apk
+
+      - name: Report size and signature
+        run: |
+          ls -lh opencode-mobile.apk
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$APKSIGNER" verify --print-certs opencode-mobile.apk | head -5 || true
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: opencode-mobile-apk
+          path: opencode-mobile.apk
+
+      - name: Publish rolling APK release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-latest
+          name: opencode-mobile.apk — latest main
+          prerelease: true
+          # Never take the "Latest" badge away from a versioned release.
+          make_latest: false
+          # Keeps the download URL stable across builds.
+          overwrite_files: true
+          files: opencode-mobile.apk
+          body: |
+            Side-loadable APK built from `main`.
+
+            - Commit: ${{ github.sha }}
+            - Version: ${{ steps.version.outputs.name }}
+            - Run: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            **Install:** open
+            `https://github.com/bariscodefxy/opencode-mobile/releases/download/apk-latest/opencode-mobile.apk`
+            on the device, or download it and tap the file.
+
+            Signed with a generated debug key (the fork has no release keystore).
+            Its signature does not match the Play/F-Droid build of
+            `cc.agentlabs.opencode`, so uninstall any store version before
+            installing this one.
