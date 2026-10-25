@@ -1,0 +1,16 @@
+{
+  "task": "[1] Use chrome-use to connect to the user's existing Chrome. Browser hygiene mandatory: open ONE tab, do this single check, capture evidence, then CLOSE the tab. Pin/re-verify your own tab by URL before every action since this Chrome has heavy concurrent activity from other processes.\n\nTask: Navigate directly to https://studio.youtube.com/channel/UC.../videos (or use the Content -> Videos list in YouTube Studio for the Vibe Technologies channel) and find the video titled \"OpenCode Mobile — AI coding agent in your pocket #Shorts\" (video ID jC6yB57t1Oo, uploaded moments ago).\n\nI need the ACTUAL current status shown in the Studio videos list for this specific video:\n- Visibility (Public / Unlisted / Private / Scheduled)\n- Processing status (Processing / Checks complete / any restriction flags like Copyright claim, Age-restricted, etc.)\n- Any error/warning icon next to it\n\nThis matters because `https://www.youtube.com/oembed?url=https://youtube.com/shorts/jC6yB57t1Oo&format=json` returned HTTP 404 twice (60 seconds apart) which is unusual for a genuinely public, fully processed video — oEmbed usually resolves within seconds. I need to know if this is just normal indexing delay, or if something is actually wrong (wrong visibility, processing failure, restriction).\n\nReport back: exact visibility setting, exact processing status, any flags/warnings, and a screenshot path. Then close your tab and confirm you closed it.\n\n[2] URGENT FOUNDER DIRECTIVE: you are opening tens of YouTube tabs in the founder's Chrome and NOT closing them. STOP that immediately. Rules: (1) reuse ONE tab for all navigation (Page.navigate in the same target), never open a new tab per URL; (2) close every tab you open right after capturing evidence (Target.closeTarget); (3) before your next step, close ALL YouTube tabs you have opened. Acknowledge and comply.\n\n[3] RESUME: opencode server restarted (SQLITE_FULL, disk recovered to 9Gi). Continue exactly from your last step. Browser hygiene: reuse ONE tab, close tabs after evidence.",
+  "assessment": "{\"task_summary\":\"Investigated why oEmbed 404'd for a YouTube Short; found the video ID had a typo (capital O vs digit 0). Confirmed real video jC6yB57t10o is Public/Published with no restrictions via YouTube Studio Content list; captured screenshot; closed tabs.\",\"task_type\":\"ops\",\"status\":\"complete\",\"confidence\":0.9,\"evidence\":{\"tests\":{\"ran\":false,\"results\":\"unknown\",\"ran_after_changes\":false,\"commands\":[]},\"build\":{\"ran\":false,\"results\":\"unknown\"},\"pr\":{\"created\":false,\"url\":\"\",\"ci_status\":\"unknown\",\"checked\":false}},\"remaining_work\":[],\"next_steps\":[],\"needs_user_action\":[],\"stuck\":false,\"alternate_approach\":\"\"}",
+  "analysis": {
+    "complete": true,
+    "shouldContinue": false,
+    "reason": "Self-assessment confirms completion",
+    "missing": [],
+    "nextActions": [],
+    "requiresHumanAction": false,
+    "severity": "NONE"
+  },
+  "crossReview": null,
+  "routing": null,
+  "timestamp": "2026-07-28T07:16:21.896Z"
+}

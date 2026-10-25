@@ -1,0 +1,241 @@
+{
+  "schema": 1,
+  "gateVersion": "0.4.14",
+  "days": {
+    "2026-07-15": {
+      "gated": 0,
+      "total": 98,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-16": {
+      "gated": 0,
+      "total": 110,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-17": {
+      "gated": 0,
+      "total": 108,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-18": {
+      "gated": 0,
+      "total": 102,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-19": {
+      "gated": 0,
+      "total": 111,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-20": {
+      "gated": 0,
+      "total": 117,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-21": {
+      "gated": 0,
+      "total": 120,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-22": {
+      "gated": 0,
+      "total": 125,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-23": {
+      "gated": 0,
+      "total": 108,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-24": {
+      "gated": 0,
+      "total": 118,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-25": {
+      "gated": 0,
+      "total": 146,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-26": {
+      "gated": 0,
+      "total": 139,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-27": {
+      "gated": 0,
+      "total": 125,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-28": {
+      "gated": 0,
+      "total": 154,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-29": {
+      "gated": 0,
+      "total": 114,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-30": {
+      "gated": 0,
+      "total": 106,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-07-31": {
+      "gated": 0,
+      "total": 148,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-01": {
+      "gated": 0,
+      "total": 150,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-02": {
+      "gated": 0,
+      "total": 142,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-03": {
+      "gated": 0,
+      "total": 158,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-04": {
+      "gated": 0,
+      "total": 175,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-05": {
+      "gated": 0,
+      "total": 165,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-06": {
+      "gated": 0,
+      "total": 170,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-07": {
+      "gated": 0,
+      "total": 177,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-08": {
+      "gated": 0,
+      "total": 176,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-09": {
+      "gated": 0,
+      "total": 179,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-10": {
+      "gated": 0,
+      "total": 193,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-11": {
+      "gated": 0,
+      "total": 195,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-12": {
+      "gated": 0,
+      "total": 185,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-13": {
+      "gated": 0,
+      "total": 198,
+      "share": 0,
+      "partial": false,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    },
+    "2026-08-14": {
+      "gated": 20,
+      "total": 167,
+      "share": 0.11976047904191617,
+      "partial": true,
+      "observedAt": "2026-08-14T18:36:57.687Z"
+    }
+  },
+  "snapshots": {
+    "2026-08-14": {
+      "observedAt": "2026-08-14T18:36:57.687Z",
+      "windowDays": 30,
+      "share": 0.006844626967830253,
+      "shareBySession": 0.0016539861065167053,
+      "users": {
+        "gated": 20,
+        "total": 2922
+      },
+      "sessions": {
+        "gated": 50,
+        "total": 30230
+      },
+      "staleVersion": "0.4.10",
+      "staleShare": 0.6358658453114305
+    }
+  }
+}

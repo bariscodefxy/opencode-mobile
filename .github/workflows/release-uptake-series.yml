@@ -1,0 +1,99 @@
+name: Release uptake series
+
+# Records the install-base uptake curve every day, into the repo.
+#
+# WHY IT IS A SCHEDULED JOB AND NOT A HUMAN/AGENT TASK
+# ----------------------------------------------------
+# AGE-111 asks whether the gated share RISES after a release, which needs
+# datapoints taken days apart. Three things make "someone runs the script and
+# pastes the output" the wrong mechanism:
+#
+#   * The Sentry token is a GitHub secret. Whoever is asked to measure may not
+#     have it, and the honest fallback ("assume gated_share = 0") is the answer
+#     that makes every rollout look like a failure.
+#   * Sentry release health retains ~90 days. A datapoint not written down when
+#     it is taken cannot be recovered. Rollout-day baselines are gone forever.
+#   * A skipped week is a hole in the curve, and a hole reads exactly like flat.
+#
+# So the series is committed to docs/metrics/release-uptake.json. Each run
+# carries the trailing 7 days and merges by date, so a missed run backfills and
+# the file self-heals. Read the curve from the file or from any run's summary:
+#
+#   gh workflow run "Release uptake series"
+#   gh run watch <id> && gh run view <id>
+#   node scripts/uptake-series.mjs --markdown --baseline 2026-08-14
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Trailing window to pull (>=7 backfills gaps; 30 seeds history)"
+        required: false
+        default: "7"
+      baseline:
+        description: "Rollout date the trend is measured against"
+        required: false
+        default: "2026-08-14"
+      commit:
+        description: "Commit the updated series back to the default branch"
+        required: false
+        type: boolean
+        default: true
+  schedule:
+    # Daily 15:05 UTC. Daily, not weekly: the unit stored is a calendar day, and
+    # a weekly cadence would still be correct but leaves the newest point partial
+    # for six days at a time — useless for watching a rollout land.
+    - cron: "5 15 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-uptake-series
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      # The merge rules (partial days, backfill, never-downgrade) decide what the
+      # curve says. They are verified before they are allowed to write history.
+      - name: Test the series model
+        run: node --test scripts/uptake-series.mjs scripts/uptake-series.test.mjs scripts/release-uptake.test.mjs
+
+      - name: Measure
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_PRODUCT_INTELLIGENCE_TOKEN || secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG || 'vibetechnologies' }}
+        run: node scripts/release-uptake.mjs --json --days "${{ inputs.days || 7 }}" > /tmp/uptake.json
+
+      - name: Merge into the series
+        run: |
+          set -euo pipefail
+          node scripts/uptake-series.mjs --in /tmp/uptake.json --write --markdown \
+            --baseline "${{ inputs.baseline || '2026-08-14' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the datapoint
+        if: ${{ inputs.commit != false }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/metrics/release-uptake.json; then
+            echo "no change to the series" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/metrics/release-uptake.json
+          git commit -m "chore(metrics): record install-base uptake for $(date -u +%F)"
+          # A concurrent push must not fail the measurement; rebase and retry once.
+          git pull --rebase --autostash origin main || true
+          git push origin HEAD:main

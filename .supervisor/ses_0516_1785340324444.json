@@ -1,0 +1,25 @@
+{
+  "task": "Repo: ~/workspace/opencode-mobile. Cut YouTube Shorts (vertical 9:16, 15-60s each) from EXISTING footage only, no re-recording.\n\nSource files (verified real, git-tracked, untapped):\n- website/public/cua-showcase.mp4 (174s)\n- docs/qa/screenshots/cua-connect-flow.mp4 (64.28s)\n- docs-site/demo.mp4 (31.00s)\n\nSTEPS\n1. ffprobe each file for exact duration/resolution.\n2. Extract frames every ~5s (ffmpeg -vf fps=1/5) to a tmp dir and inspect them (Read tool on images) to identify distinct coherent app-flow segments (e.g. connect screen, session list, new session, chat, settings, model picker).\n3. Cut each distinct segment with ffmpeg into its own file, re-encoded to vertical 1080x1920 (pad or crop as needed — cropping/padding existing footage is allowed, re-recording is not). Save to /tmp/shorts-out/short-NN-<name>.mp4.\n4. Do NOT pad with near-duplicate segments — if cua-showcase.mp4 only really has 3 distinct flows, cut 3, not more.\n5. Report: table of cut clips (path, duration, resolution, source file + timestamp range, one-line description of the flow shown).\n\nThis is prep only — do not upload anything yet.",
+  "assessment": "{\"task_summary\":\"No agent work observed — no tool calls, no ffprobe/ffmpeg runs, no output clips produced for the YouTube Shorts cutting task.\",\"task_type\":\"ops\",\"status\":\"in_progress\",\"confidence\":0.9,\"evidence\":{\"tests\":{\"ran\":false,\"results\":\"unknown\",\"ran_after_changes\":false,\"commands\":[]},\"build\":{\"ran\":false,\"results\":\"unknown\"},\"pr\":{\"created\":false,\"url\":\"\",\"ci_status\":\"unknown\",\"checked\":false}},\"remaining_work\":[\"ffprobe website/public/cua-showcase.mp4, docs/qa/screenshots/cua-connect-flow.mp4, docs-site/demo.mp4 for duration/resolution\",\"Extract frames every 5s (ffmpeg -vf fps=1/5) to tmp dir and Read the images to identify distinct app flows\",\"Cut each distinct segment to vertical 1080x1920 into /tmp/shorts-out/short-NN-<name>.mp4\",\"Produce the final report table (path, duration, resolution, source + timestamp range, description)\"],\"next_steps\":[\"Run ffprobe on all three source files\",\"Extract and inspect frames, then cut segments with ffmpeg\",\"Report the clip table\"],\"needs_user_action\":[],\"stuck\":false,\"alternate_approach\":\"\"}",
+  "analysis": {
+    "complete": false,
+    "shouldContinue": true,
+    "reason": "ffprobe website/public/cua-showcase.mp4, docs/qa/screenshots/cua-connect-flow.mp4, docs-site/demo.mp4 for duration/resolution",
+    "missing": [
+      "ffprobe website/public/cua-showcase.mp4, docs/qa/screenshots/cua-connect-flow.mp4, docs-site/demo.mp4 for duration/resolution",
+      "Extract frames every 5s (ffmpeg -vf fps=1/5) to tmp dir and Read the images to identify distinct app flows",
+      "Cut each distinct segment to vertical 1080x1920 into /tmp/shorts-out/short-NN-<name>.mp4",
+      "Produce the final report table (path, duration, resolution, source + timestamp range, description)"
+    ],
+    "nextActions": [
+      "Run ffprobe on all three source files",
+      "Extract and inspect frames, then cut segments with ffmpeg",
+      "Report the clip table"
+    ],
+    "requiresHumanAction": false,
+    "severity": "LOW"
+  },
+  "crossReview": null,
+  "routing": null,
+  "timestamp": "2026-07-29T15:52:04.443Z"
+}

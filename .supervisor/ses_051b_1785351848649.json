@@ -1,0 +1,23 @@
+{
+  "task": "[1] ONE task: OpenCode Mobile has full journey footage + 1 Short live (see OpenCode Mobile Notion page). Founder goal: x10 Shorts. Cut additional distinct Shorts from EXISTING footage only (no re-recording — Demo Registry rule), upload via vibebrowser-cli (npx -y @vibebrowser/cli --remote wss://relay.api.vibebrowser.app/eb936443-00fc-4e18-9b5b-4b06c02b00d6), oEmbed-verify each, list links on the Notion page. Honest count if footage supports fewer than 9 more. ONE tab, close after. github-copilot only.\n\n[2] continue — your last turn ended without text (likely provider interruption). Resume exactly where you left off and finish the task per the original instructions with live evidence.\n\n[3] continue — the opencode server crashed ~2h ago and was just restarted; your run was killed mid-flight. Re-check what you actually completed (files, PRs, uploads) before redoing anything, then resume your original task to completion with live evidence.\n\n[4] UPLOAD FREEZE (founder directive — we have been re-uploading duplicate videos): Do NOT upload anything to YouTube until further notice. Continue all other work (recording NEW journeys, cutting, persisting footage) but STOP at the upload step and report: exact video files ready, their source journeys, and hashes (md5). A Demo Video Registry is being built from the real channel listing; uploads resume only after dedupe-check against it.\n\n[5] UPDATED UPLOAD POLICY (founder): only upload Shorts for MEANINGFUL features that are production-ready and usable by real users today — not every feature, not internal/bootstrap flows. Quality bar over quantity; the x10 target only counts videos meeting this bar. Before proposing an upload: (a) does the journey show real user value end-to-end? (b) is it production-ready (shipped, working live)? (c) not already in the Demo Video Registry (https://app.notion.com/p/Demo-Video-Registry-3acac25eb49f8102b36efccf3a3f93e7)? Keep recording/cutting; uploads still HELD — when reporting ready files, tag each with meets-bar yes/no + why.",
+  "assessment": "{\"task_summary\":\"Evaluated 2 pending Shorts clips against founder's new upload bar; both held, no uploads (upload freeze active). Reported meets-bar table with reasons.\",\"task_type\":\"ops\",\"status\":\"waiting_for_user\",\"confidence\":0.8,\"evidence\":{\"tests\":{\"ran\":false,\"results\":\"unknown\",\"ran_after_changes\":false,\"commands\":[]},\"build\":{\"ran\":false,\"results\":\"unknown\"},\"pr\":{\"created\":false,\"url\":\"\",\"ci_status\":\"unknown\",\"checked\":false}},\"remaining_work\":[],\"next_steps\":[\"Resume uploads only after founder lifts freeze and confirms ckAHcfZKuUY distinctness\"],\"needs_user_action\":[\"Lift UPLOAD FREEZE / decide whether short-coding.mp4 supersedes registry entry ckAHcfZKuUY\"],\"stuck\":false,\"alternate_approach\":\"\"}",
+  "analysis": {
+    "complete": false,
+    "shouldContinue": true,
+    "reason": "Resume uploads only after founder lifts freeze and confirms ckAHcfZKuUY distinctness (continue autonomously; gated item surfaced separately: Lift UPLOAD FREEZE / decide whether short-coding.mp4 supersedes registry entry ckAHcfZKuUY)",
+    "missing": [
+      "Run tests",
+      "Provide local test commands"
+    ],
+    "nextActions": [
+      "Run the full test suite and capture output",
+      "Run local tests and include commands in self-assessment",
+      "Resume uploads only after founder lifts freeze and confirms ckAHcfZKuUY distinctness"
+    ],
+    "requiresHumanAction": true,
+    "severity": "HIGH"
+  },
+  "crossReview": null,
+  "routing": null,
+  "timestamp": "2026-07-29T19:04:08.649Z"
+}
